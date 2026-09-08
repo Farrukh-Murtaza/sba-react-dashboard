@@ -1,39 +1,73 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import TasksPage from "./pages/TasksPage";
+import NotFound from "./pages/NotFound";
+
+import type {
+  initialTasks,
+  Task,
+  TaskStatus,
+} from "./types";
 
 import {
-  initialTasks,
-  type Task,
-  type TaskStatus,
-} from "./types";
-import NotFound from "./pages/NotFound";
-import AddTaskPage from "./pages/AddTaskPage";
+  loadTasks,
+  saveTasks,
+} from "./utils/storage";
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(
+    () => loadTasks()
+  );
 
-  function updateTaskStatus(id: string, status: TaskStatus) {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id
-          ? { ...task, status }
+  // Save tasks whenever they change
+  useEffect(() => {
+    saveTasks(tasks);
+  }, [tasks]);
+
+  function handleAddTask(
+    newTask: Task
+  ) {
+    setTasks((previousTasks) => [
+      ...previousTasks,
+      newTask,
+    ]);
+  }
+
+  function handleUpdateTask(
+    updatedTask: Task
+  ) {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === updatedTask.id
+          ? updatedTask
           : task
       )
     );
   }
 
-  function addTask(newTask: Task) {
-    setTasks((prevTasks) => [
-      ...prevTasks,
-      newTask,
-    ]);
+  function handleUpdateStatus(
+    id: string,
+    status: TaskStatus
+  ) {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === id
+          ? {
+            ...task,
+            status,
+          }
+          : task
+      )
+    );
   }
 
-  function deleteTask(id: string) {
+  function handleDeleteTask(
+    id: string
+  ) {
+
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this task?"
     );
@@ -43,14 +77,27 @@ function App() {
         prevTasks.filter((task) => task.id !== id)
       );
     }
+
+
+  }
+
+  function handleImportTasks(
+    importedTasks: Task[]
+  ) {
+    setTasks(importedTasks);
   }
 
   return (
     <Routes>
       <Route element={<DashboardLayout />}>
+
         <Route
           path="/"
-          element={<Dashboard tasks={tasks} />}
+          element={
+            <Dashboard
+              tasks={tasks}
+            />
+          }
         />
 
         <Route
@@ -58,23 +105,27 @@ function App() {
           element={
             <TasksPage
               tasks={tasks}
-              onUpdateTask={updateTaskStatus}
-              onDeleteTask={deleteTask}
+              onAddTask={handleAddTask}
+              onUpdateTask={handleUpdateTask}
+              onUpdateStatus={
+                handleUpdateStatus
+              }
+              onDeleteTask={
+                handleDeleteTask
+              }
+              onImportTasks={
+                handleImportTasks
+              }
             />
           }
         />
 
-        <Route
-          path="/tasks/new"
-          element={
-            <AddTaskPage
-              onAddTask={addTask}
-            />
-          }
-        />
       </Route>
 
-      <Route path="*" element={<NotFound />} />
+      <Route
+        path="*"
+        element={<NotFound />}
+      />
     </Routes>
   );
 }

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1",
+    "title": "Complete React Dashboard",
+    "description": "Finish the React task management dashboard.",
+    "status": "inProgress",
+    "priority": "high",
+    "dueDate": "2026-09-15"
+  },
+  {
+    "id": "2",
+    "title": "Review TypeScript",
+    "description": "Practice TypeScript interfaces, types, and functions.",
+    "status": "pending",
+    "priority": "medium",
+    "dueDate": "2026-09-18"
+  },
+  {
+    "id": "3",
+    "title": "Build Task Form",
+    "description": "Create a controlled form for adding and editing tasks.",
+    "status": "completed",
+    "priority": "high",
+    "dueDate": "2026-09-10"
+  },
+  {
+    "id": "4",
+    "title": "Implement Task Filtering",
+    "description": "Add filtering by task status and priority.",
+    "status": "inProgress",
+    "priority": "medium",
+    "dueDate": "2026-09-20"
+  },
+  {
+    "id": "5",
+    "title": "Add Search Functionality",
+    "description": "Allow users to search tasks by title and description.",
+    "status": "pending",
+    "priority": "medium",
+    "dueDate": "2026-09-22"
+  },
+  {
+    "id": "6",
+    "title": "Implement Task Sorting",
+    "description": "Add sorting by title, due date, priority, and status.",
+    "status": "pending",
+    "priority": "low",
+    "dueDate": "2026-09-25"
+  },
+  {
+    "id": "7",
+    "title": "Test Local Storage",
+    "description": "Verify that tasks persist after refreshing the browser.",
+    "status": "completed",
+    "priority": "high",
+    "dueDate": "2026-09-12"
+  },
+  {
+    "id": "8",
+    "title": "Implement Data Export",
+    "description": "Allow users to export their tasks as a JSON file.",
+    "status": "pending",
+    "priority": "low",
+    "dueDate": "2026-09-28"
+  },
+  {
+    "id": "9",
+    "title": "Implement Data Import",
+    "description": "Allow users to import tasks from a JSON file.",
+    "status": "inProgress",
+    "priority": "medium",
+    "dueDate": "2026-09-30"
+  },
+  {
+    "id": "10",
+    "title": "Responsive Design Testing",
+    "description": "Test the dashboard on desktop, tablet, and mobile screens.",
+    "status": "pending",
+    "priority": "high",
+    "dueDate": "2026-10-02"
+  }
+]

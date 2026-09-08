@@ -35,17 +35,7 @@ function Sidebar() {
                     Tasks
                 </NavLink>
 
-                <NavLink
-                    to="/tasks/new"
-                    className={({ isActive }) =>
-                        `${linkClass} ${isActive
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-100"
-                        }`
-                    }
-                >
-                    Add Task
-                </NavLink>
+
             </nav>
         </aside>
     );
