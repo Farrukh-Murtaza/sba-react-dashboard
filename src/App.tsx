@@ -1,74 +1,82 @@
-import DashboardLayout from "./layout/DashboardLayout";
-import Dashboard from "./pages/Dashboard";
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
+import DashboardLayout from "./components/DashboardLayout";
+import Dashboard from "./pages/Dashboard";
+import TasksPage from "./pages/TasksPage";
+
+import {
+  initialTasks,
+  type Task,
+  type TaskStatus,
+} from "./types";
+import NotFound from "./pages/NotFound";
+import AddTaskPage from "./pages/AddTaskPage";
 
 function App() {
-  return <Dashboard />
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+  function updateTaskStatus(id: string, status: TaskStatus) {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id
+          ? { ...task, status }
+          : task
+      )
+    );
+  }
+
+  function addTask(newTask: Task) {
+    setTasks((prevTasks) => [
+      ...prevTasks,
+      newTask,
+    ]);
+  }
+
+  function deleteTask(id: string) {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this task?"
+    );
+
+    if (isConfirmed) {
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== id)
+      );
+    }
+  }
+
+  return (
+    <Routes>
+      <Route element={<DashboardLayout />}>
+        <Route
+          path="/"
+          element={<Dashboard tasks={tasks} />}
+        />
+
+        <Route
+          path="/tasks"
+          element={
+            <TasksPage
+              tasks={tasks}
+              onUpdateTask={updateTaskStatus}
+              onDeleteTask={deleteTask}
+            />
+          }
+        />
+
+        <Route
+          path="/tasks/new"
+          element={
+            <AddTaskPage
+              onAddTask={addTask}
+            />
+          }
+        />
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
 export default App;
-
-
-
-
-// function App() {
-
-//   const [selectedStatus, setSelectedStatus] = useState<string>('all');
-//   const [selectedPriority, setPriorityStatus] = useState<string>('all');
-
-//   const [tasks, setTasks] = useState<Task[]>(initialTasks);
-
-
-//   function updateList(id: string, status: TaskStatus) {
-//     setTasks(prev =>
-//       prev.map(task => (task.id === id ? { ...task, status } : task))
-//     );
-//   }
-
-//   function deleteTask(id: string) {
-//     const isConfirm: boolean = window.confirm(`Are you sure you want to delete task with id : ${id}`)
-//     if (isConfirm) {
-//       setTasks(prev => prev.filter(task => task.id !== id));
-//     }
-//   }
-
-//   function onFilterChange(status: string, priority: string) {
-//     setSelectedStatus(status);
-//     setPriorityStatus(priority);
-//   }
-
-//   let filteredTasks = tasks;
-
-//   if (selectedStatus !== 'all') {
-//     filteredTasks = filteredTasks.filter(task => task.status === selectedStatus);
-//   }
-
-//   if (selectedPriority !== 'all') {
-//     filteredTasks = filteredTasks.filter(task => task.priority === selectedPriority);
-//   }
-
-
-//   return (
-//     <div className="max-w-200 m-auto ">
-//       <h2
-//         className="tracking-tight text-slate-900 font-semibold
-//         target:animate-[fade-in_1.5s] mt-10 border-b
-//          pb-1 text-3xl nextra-border"
-//       >Task Manager</h2>
-
-//       <TaskFilter
-//         onFilter={onFilterChange}
-//         selectedStatus={selectedStatus}
-//         selectedPriority={selectedPriority} />
-
-
-//       <TaskList
-//         tasks={filteredTasks}
-//         onUpdateList={updateList}
-//         onDeleteTask={deleteTask} />
-
-//     </div>
-//   )
-// }
-
-// export default App;
