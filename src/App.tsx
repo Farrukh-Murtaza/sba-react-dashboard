@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import {
   Routes,
   Route,
@@ -9,10 +13,9 @@ import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import TasksPage from "./pages/TasksPage";
 import NotFound from "./pages/NotFound";
-import { initialTasks } from "./data/tasks";
 
 import {
-
+  initialTasks,
   type Task,
   type TaskStatus,
 } from "./types";
@@ -22,14 +25,20 @@ import {
   saveTasks,
 } from "./utils/storage";
 
+import {
+  ThemeProvider,
+} from "./context/ThemeContext";
+
 function App() {
   const [tasks, setTasks] =
     useState<Task[]>(() => {
       const storedTasks =
         loadTasks();
 
-      return storedTasks ??
-        initialTasks;
+      return (
+        storedTasks ??
+        initialTasks
+      );
     });
 
   useEffect(() => {
@@ -40,38 +49,49 @@ function App() {
     id: string,
     status: TaskStatus
   ) {
-    setTasks((previousTasks) =>
-      previousTasks.map((task) =>
-        task.id === id
-          ? {
-            ...task,
-            status,
-          }
-          : task
-      )
+    setTasks(
+      (previousTasks) =>
+        previousTasks.map(
+          (task) =>
+            task.id === id
+              ? {
+                ...task,
+                status,
+              }
+              : task
+        )
     );
   }
 
-  function addTask(newTask: Task) {
-    setTasks((previousTasks) => [
-      ...previousTasks,
-      newTask,
-    ]);
+  function addTask(
+    newTask: Task
+  ) {
+    setTasks(
+      (previousTasks) => [
+        ...previousTasks,
+        newTask,
+      ]
+    );
   }
 
   function updateTask(
     updatedTask: Task
   ) {
-    setTasks((previousTasks) =>
-      previousTasks.map((task) =>
-        task.id === updatedTask.id
-          ? updatedTask
-          : task
-      )
+    setTasks(
+      (previousTasks) =>
+        previousTasks.map(
+          (task) =>
+            task.id ===
+              updatedTask.id
+              ? updatedTask
+              : task
+        )
     );
   }
 
-  function deleteTask(id: string) {
+  function deleteTask(
+    id: string
+  ) {
     const isConfirmed =
       window.confirm(
         "Are you sure you want to delete this task?"
@@ -81,68 +101,123 @@ function App() {
       return;
     }
 
-    setTasks((previousTasks) =>
-      previousTasks.filter(
-        (task) =>
-          task.id !== id
-      )
+    setTasks(
+      (previousTasks) =>
+        previousTasks.filter(
+          (task) =>
+            task.id !== id
+        )
     );
   }
 
   function importTasks(
     importedTasks: Task[]
   ) {
-    setTasks(importedTasks);
+    setTasks(
+      importedTasks
+    );
+  }
+
+  function reorderTasks(
+    draggedTaskId: string,
+    targetTaskId: string
+  ) {
+    setTasks((previousTasks) => {
+      const draggedIndex =
+        previousTasks.findIndex(
+          (task) =>
+            task.id ===
+            draggedTaskId
+        );
+
+      const targetIndex =
+        previousTasks.findIndex(
+          (task) =>
+            task.id ===
+            targetTaskId
+        );
+
+      if (
+        draggedIndex === -1 ||
+        targetIndex === -1 ||
+        draggedIndex === targetIndex
+      ) {
+        return previousTasks;
+      }
+
+      const updatedTasks = [
+        ...previousTasks,
+      ];
+
+      const [draggedTask] =
+        updatedTasks.splice(
+          draggedIndex,
+          1
+        );
+
+      updatedTasks.splice(
+        targetIndex,
+        0,
+        draggedTask
+      );
+
+      return updatedTasks;
+    });
   }
 
   return (
-    <Routes>
-      <Route
-        element={
-          <DashboardLayout />
-        }
-      >
+    <ThemeProvider>
+      <Routes>
         <Route
-          path="/"
           element={
-            <Dashboard
-              tasks={tasks}
-            />
+            <DashboardLayout />
           }
-        />
+        >
+          <Route
+            path="/"
+            element={
+              <Dashboard
+                tasks={
+                  tasks
+                }
+              />
+            }
+          />
+
+          <Route
+            path="/tasks"
+            element={
+              <TasksPage
+                tasks={tasks}
+                onUpdateTaskStatus={
+                  updateTaskStatus
+                }
+                onAddTask={addTask}
+                onUpdateTask={
+                  updateTask
+                }
+                onDeleteTask={
+                  deleteTask
+                }
+                onImportTasks={
+                  importTasks
+                }
+                onReorderTasks={
+                  reorderTasks
+                }
+              />
+            }
+          />
+        </Route>
 
         <Route
-          path="/tasks"
+          path="*"
           element={
-            <TasksPage
-              tasks={tasks}
-              onUpdateTaskStatus={
-                updateTaskStatus
-              }
-              onAddTask={
-                addTask
-              }
-              onUpdateTask={
-                updateTask
-              }
-              onDeleteTask={
-                deleteTask
-              }
-              onImportTasks={
-                importTasks
-              }
-            />
+            <NotFound />
           }
         />
-      </Route>
-
-      <Route
-        path="*"
-        element={
-          <NotFound />
-        }
-      />
-    </Routes>
+      </Routes>
+    </ThemeProvider>
   );
 }
 

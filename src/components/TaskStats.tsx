@@ -57,12 +57,12 @@ function StatCard({
     value,
 }: StatCardProps) {
     return (
-        <div className="bg-white rounded-xl shadow p-5">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow p-5 text-center">
             <p className="text-gray-500 text-sm">
                 {label}
             </p>
 
-            <p className="text-3xl font-bold mt-2">
+            <p className="text-3xl dark:text-white font-bold mt-2">
                 {value}
             </p>
         </div>

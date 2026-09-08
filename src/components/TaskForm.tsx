@@ -1,5 +1,8 @@
 import { useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import type {
+    FormEvent,
+    ChangeEvent,
+} from "react";
 
 import type {
     Task,
@@ -18,73 +21,105 @@ function TaskForm({
     onSubmit,
     onCancel,
 }: TaskFormProps) {
+    const [formData, setFormData] =
+        useState<TaskFormData>({
+            title: task?.title ?? "",
+            description:
+                task?.description ?? "",
+            status:
+                task?.status ??
+                "pending",
+            priority:
+                task?.priority ??
+                "medium",
+            dueDate:
+                task?.dueDate ?? "",
+        });
 
-    const [formData, setFormData] = useState<TaskFormData>({
-        title: task?.title ?? "",
-        description: task?.description ?? "",
-        status: task?.status ?? "pending",
-        priority: task?.priority ?? "medium",
-        dueDate: task?.dueDate ?? "",
-    });
-
-    const [errors, setErrors] = useState<TaskErrors>({});
+    const [errors, setErrors] =
+        useState<TaskErrors>({});
 
     function handleChange(
         event: ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            HTMLInputElement |
+            HTMLTextAreaElement |
+            HTMLSelectElement
         >
     ) {
-        const { name, value } = event.target;
+        const {
+            name,
+            value,
+        } = event.target;
 
-        setFormData((previous) => ({
-            ...previous,
-            [name]: value,
-        }));
-
-        // Clear the error for the field being edited.
-        if (errors[name as keyof TaskErrors]) {
-            setErrors((previous) => ({
+        setFormData(
+            (previous) => ({
                 ...previous,
-                [name]: undefined,
-            }));
+                [name]: value,
+            })
+        );
+
+        if (
+            errors[
+            name as keyof TaskErrors
+            ]
+        ) {
+            setErrors(
+                (previous) => ({
+                    ...previous,
+                    [name]: undefined,
+                })
+            );
         }
     }
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    function handleSubmit(
+        event: FormEvent<HTMLFormElement>
+    ) {
         event.preventDefault();
 
-        const validationErrors = validateTask(formData);
+        const validationErrors =
+            validateTask(formData);
 
-        setErrors(validationErrors);
+        setErrors(
+            validationErrors
+        );
 
-        if (hasErrors(validationErrors)) {
+        if (
+            hasErrors(
+                validationErrors
+            )
+        ) {
             return;
         }
 
         const newTask: Task = {
-            id: task?.id ?? crypto.randomUUID(),
+            id:
+                task?.id ??
+                crypto.randomUUID(),
             ...formData,
         };
 
         onSubmit(newTask);
     }
 
-    const isEditing = Boolean(task);
+    const isEditing =
+        Boolean(task);
 
     return (
         <form
             onSubmit={handleSubmit}
-            className="bg-white p-6 rounded-lg shadow-sm"
+            className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg"
         >
-            <h2 className="text-xl font-semibold mb-6">
-                {isEditing ? "Edit Task" : "Add Task"}
+            <h2 className="text-xl font-bold mb-4 dark:text-white">
+                {isEditing
+                    ? "Edit Task"
+                    : "Add Task"}
             </h2>
 
-            {/* Title */}
             <div className="mb-4">
                 <label
                     htmlFor="title"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block font-medium mb-1 dark:text-gray-200"
                 >
                     Title
                 </label>
@@ -93,27 +128,26 @@ function TaskForm({
                     id="title"
                     name="title"
                     type="text"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className={`bg-white px-3 py-2 block w-full rounded-md border shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 ${errors.title
-                        ? "border-red-500"
-                        : "border-gray-300"
-                        }`}
-                    placeholder="Enter task title"
+                    value={
+                        formData.title
+                    }
+                    onChange={
+                        handleChange
+                    }
+                    className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
 
                 {errors.title && (
-                    <p className="mt-1 text-sm text-red-500">
+                    <p className="text-red-500 text-sm mt-1">
                         {errors.title}
                     </p>
                 )}
             </div>
 
-            {/* Description */}
             <div className="mb-4">
                 <label
                     htmlFor="description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block font-medium mb-1 dark:text-gray-200"
                 >
                     Description
                 </label>
@@ -121,110 +155,137 @@ function TaskForm({
                 <textarea
                     id="description"
                     name="description"
-                    value={formData.description}
-                    onChange={handleChange}
+                    value={
+                        formData.description
+                    }
+                    onChange={
+                        handleChange
+                    }
                     rows={4}
-                    className={`bg-white px-3 py-2 block w-full rounded-md border shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 ${errors.description
-                        ? "border-red-500"
-                        : "border-gray-300"
-                        }`}
-                    placeholder="Enter task description"
+                    className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
 
                 {errors.description && (
-                    <p className="mt-1 text-sm text-red-500">
-                        {errors.description}
+                    <p className="text-red-500 text-sm mt-1">
+                        {
+                            errors.description
+                        }
                     </p>
                 )}
             </div>
 
-            {/* Status */}
-            <div className="mb-4">
-                <label
-                    htmlFor="status"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                    Status
-                </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label
+                        htmlFor="status"
+                        className="block font-medium mb-1 dark:text-gray-200"
+                    >
+                        Status
+                    </label>
 
-                <select
-                    id="status"
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                    className="bg-white px-3 py-2 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-                    <option value="pending">Pending</option>
-                    <option value="inProgress">In Progress</option>
-                    <option value="completed">Completed</option>
-                </select>
+                    <select
+                        id="status"
+                        name="status"
+                        value={
+                            formData.status
+                        }
+                        onChange={
+                            handleChange
+                        }
+                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="inProgress">
+                            In Progress
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        htmlFor="priority"
+                        className="block font-medium mb-1 dark:text-gray-200"
+                    >
+                        Priority
+                    </label>
+
+                    <select
+                        id="priority"
+                        name="priority"
+                        value={
+                            formData.priority
+                        }
+                        onChange={
+                            handleChange
+                        }
+                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                        <option value="low">
+                            Low
+                        </option>
+
+                        <option value="medium">
+                            Medium
+                        </option>
+
+                        <option value="high">
+                            High
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        htmlFor="dueDate"
+                        className="block font-medium mb-1 dark:text-gray-200"
+                    >
+                        Due Date
+                    </label>
+
+                    <input
+                        id="dueDate"
+                        name="dueDate"
+                        type="date"
+                        value={
+                            formData.dueDate
+                        }
+                        onChange={
+                            handleChange
+                        }
+                        className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    />
+
+                    {errors.dueDate && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.dueDate}
+                        </p>
+                    )}
+                </div>
             </div>
 
-            {/* Priority */}
-            <div className="mb-4">
-                <label
-                    htmlFor="priority"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                    Priority
-                </label>
-
-                <select
-                    id="priority"
-                    name="priority"
-                    value={formData.priority}
-                    onChange={handleChange}
-                    className="bg-white px-3 py-2 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
-            </div>
-
-            {/* Due Date */}
-            <div className="mb-6">
-                <label
-                    htmlFor="dueDate"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                    Due Date
-                </label>
-
-                <input
-                    id="dueDate"
-                    name="dueDate"
-                    type="date"
-                    value={formData.dueDate}
-                    onChange={handleChange}
-                    className={`bg-white px-3 py-2 block w-full rounded-md border shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 ${errors.dueDate
-                        ? "border-red-500"
-                        : "border-gray-300"
-                        }`}
-                />
-
-                {errors.dueDate && (
-                    <p className="mt-1 text-sm text-red-500">
-                        {errors.dueDate}
-                    </p>
-                )}
-            </div>
-
-            {/* Buttons */}
             <div className="flex justify-end gap-3">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
                 >
                     Cancel
                 </button>
 
                 <button
                     type="submit"
-                    className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                    {isEditing ? "Update Task" : "Add Task"}
+                    {isEditing
+                        ? "Update Task"
+                        : "Save Task"}
                 </button>
             </div>
         </form>

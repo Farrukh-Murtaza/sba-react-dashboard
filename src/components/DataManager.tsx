@@ -1,6 +1,6 @@
 import {
     exportTasks,
-    importTasks,
+    importTasks
 } from "../utils/storage";
 
 import type { Task } from "../types";
@@ -55,12 +55,12 @@ function DataManager({
                 onClick={() =>
                     exportTasks(tasks)
                 }
-                className="border px-4 py-2 rounded-lg"
+                className="border px-4 py-2 rounded-lg dark:text-white"
             >
                 Export Tasks
             </button>
 
-            <label className="border px-4 py-2 rounded-lg cursor-pointer">
+            <label className="border px-4 py-2 rounded-lg cursor-pointer dark:text-white">
                 Import Tasks
 
                 <input

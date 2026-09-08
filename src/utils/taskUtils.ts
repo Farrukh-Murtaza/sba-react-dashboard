@@ -45,6 +45,9 @@ export function sortTasks(
 
     sortedTasks.sort((a, b) => {
         switch (sortBy) {
+            case "manual":
+                return 0;
+
             case "title":
                 return a.title.localeCompare(b.title);
 

@@ -7,15 +7,21 @@ import type {
 } from "../types";
 
 interface TaskFilterProps {
-    selectedStatus: "all" | TaskStatus;
+    selectedStatus:
+    | "all"
+    | TaskStatus;
+
     selectedPriority:
     | "all"
     | TaskPriority;
+
     onFilter: (
         status: string,
         priority: string
     ) => void;
+
     activeFilterCount?: number;
+
     onClearFilters?: () => void;
 }
 
@@ -29,13 +35,16 @@ function TaskFilter({
     const [statusFilter, setStatusFilter] =
         useState(selectedStatus);
 
-    const [priorityFilter, setPriorityFilter] =
-        useState(selectedPriority);
+    const [
+        priorityFilter,
+        setPriorityFilter,
+    ] = useState(selectedPriority);
 
     function handleFilters(
         event: React.ChangeEvent<HTMLSelectElement>
     ) {
-        const value = event.target.value;
+        const value =
+            event.target.value;
 
         if (
             event.target.id ===
@@ -82,7 +91,7 @@ function TaskFilter({
             <div>
                 <label
                     htmlFor="status-filter"
-                    className="mr-2 font-medium"
+                    className="mr-2 font-medium dark:text-gray-200"
                 >
                     Status:
                 </label>
@@ -90,9 +99,10 @@ function TaskFilter({
                 <select
                     id="status-filter"
                     value={statusFilter}
-                    onChange={handleFilters}
-                    className="bg-white px-2 py-2.5 block w-full rounded-md border-gray-300
-              shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    onChange={
+                        handleFilters
+                    }
+                    className="border rounded-lg px-3 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 >
                     <option value="all">
                         All
@@ -115,17 +125,20 @@ function TaskFilter({
             <div>
                 <label
                     htmlFor="priority-filter"
-                    className="mr-2 font-medium"
+                    className="mr-2 font-medium dark:text-gray-200"
                 >
                     Priority:
                 </label>
 
                 <select
                     id="priority-filter"
-                    value={priorityFilter}
-                    onChange={handleFilters}
-                    className="bg-white px-2 py-2.5 block w-full rounded-md border-gray-300
-              shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    value={
+                        priorityFilter
+                    }
+                    onChange={
+                        handleFilters
+                    }
+                    className="border rounded-lg px-3 py-2 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 >
                     <option value="all">
                         All
@@ -147,8 +160,11 @@ function TaskFilter({
 
             {activeFilterCount > 0 && (
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">
-                        {activeFilterCount} active
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                        {
+                            activeFilterCount
+                        }{" "}
+                        active
                     </span>
 
                     <button
@@ -156,7 +172,7 @@ function TaskFilter({
                         onClick={
                             handleClearFilters
                         }
-                        className="text-sm text-blue-600 hover:text-blue-800"
+                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                     >
                         Clear
                     </button>

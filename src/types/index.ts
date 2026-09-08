@@ -34,6 +34,7 @@ export interface TaskFilters {
 }
 
 export type SortOption =
+    | "manual"
     | "title"
     | "dueDate"
     | "priority"
