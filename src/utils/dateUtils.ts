@@ -1,4 +1,4 @@
-export function formatDate(
+export function formatDueDate(
     dateString: string
 ): string {
     if (!dateString) {

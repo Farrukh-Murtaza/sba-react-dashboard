@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import {
+  Routes,
+  Route,
+} from "react-router-dom";
 
 import DashboardLayout from "./components/DashboardLayout";
+
 import Dashboard from "./pages/Dashboard";
 import TasksPage from "./pages/TasksPage";
 import NotFound from "./pages/NotFound";
+import { initialTasks } from "./data/tasks";
 
-import type {
-  initialTasks,
-  Task,
-  TaskStatus,
+import {
+
+  type Task,
+  type TaskStatus,
 } from "./types";
 
 import {
@@ -18,37 +23,20 @@ import {
 } from "./utils/storage";
 
 function App() {
-  const [tasks, setTasks] = useState<Task[]>(
-    () => loadTasks()
-  );
+  const [tasks, setTasks] =
+    useState<Task[]>(() => {
+      const storedTasks =
+        loadTasks();
 
-  // Save tasks whenever they change
+      return storedTasks ??
+        initialTasks;
+    });
+
   useEffect(() => {
     saveTasks(tasks);
   }, [tasks]);
 
-  function handleAddTask(
-    newTask: Task
-  ) {
-    setTasks((previousTasks) => [
-      ...previousTasks,
-      newTask,
-    ]);
-  }
-
-  function handleUpdateTask(
-    updatedTask: Task
-  ) {
-    setTasks((previousTasks) =>
-      previousTasks.map((task) =>
-        task.id === updatedTask.id
-          ? updatedTask
-          : task
-      )
-    );
-  }
-
-  function handleUpdateStatus(
+  function updateTaskStatus(
     id: string,
     status: TaskStatus
   ) {
@@ -64,24 +52,44 @@ function App() {
     );
   }
 
-  function handleDeleteTask(
-    id: string
-  ) {
-
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
-
-    if (isConfirmed) {
-      setTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== id)
-      );
-    }
-
-
+  function addTask(newTask: Task) {
+    setTasks((previousTasks) => [
+      ...previousTasks,
+      newTask,
+    ]);
   }
 
-  function handleImportTasks(
+  function updateTask(
+    updatedTask: Task
+  ) {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === updatedTask.id
+          ? updatedTask
+          : task
+      )
+    );
+  }
+
+  function deleteTask(id: string) {
+    const isConfirmed =
+      window.confirm(
+        "Are you sure you want to delete this task?"
+      );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    setTasks((previousTasks) =>
+      previousTasks.filter(
+        (task) =>
+          task.id !== id
+      )
+    );
+  }
+
+  function importTasks(
     importedTasks: Task[]
   ) {
     setTasks(importedTasks);
@@ -89,8 +97,11 @@ function App() {
 
   return (
     <Routes>
-      <Route element={<DashboardLayout />}>
-
+      <Route
+        element={
+          <DashboardLayout />
+        }
+      >
         <Route
           path="/"
           element={
@@ -105,26 +116,31 @@ function App() {
           element={
             <TasksPage
               tasks={tasks}
-              onAddTask={handleAddTask}
-              onUpdateTask={handleUpdateTask}
-              onUpdateStatus={
-                handleUpdateStatus
+              onUpdateTaskStatus={
+                updateTaskStatus
+              }
+              onAddTask={
+                addTask
+              }
+              onUpdateTask={
+                updateTask
               }
               onDeleteTask={
-                handleDeleteTask
+                deleteTask
               }
               onImportTasks={
-                handleImportTasks
+                importTasks
               }
             />
           }
         />
-
       </Route>
 
       <Route
         path="*"
-        element={<NotFound />}
+        element={
+          <NotFound />
+        }
       />
     </Routes>
   );

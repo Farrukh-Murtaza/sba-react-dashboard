@@ -1,171 +1,167 @@
 import type React from "react";
+import { useState } from "react";
+
 import type {
-    TaskFilters,
+    TaskPriority,
+    TaskStatus,
 } from "../types";
 
 interface TaskFilterProps {
-    filters: TaskFilters;
-
-    onChange: (
-        filters: TaskFilters
+    selectedStatus: "all" | TaskStatus;
+    selectedPriority:
+    | "all"
+    | TaskPriority;
+    onFilter: (
+        status: string,
+        priority: string
     ) => void;
+    activeFilterCount?: number;
+    onClearFilters?: () => void;
 }
 
 function TaskFilter({
-    filters,
-    onChange,
+    selectedStatus,
+    selectedPriority,
+    onFilter,
+    activeFilterCount = 0,
+    onClearFilters,
 }: TaskFilterProps) {
-    const activeFilters =
-        [
-            filters.status !== "all",
-            filters.priority !== "all",
-            filters.search.trim() !== "",
-        ].filter(Boolean).length;
+    const [statusFilter, setStatusFilter] =
+        useState(selectedStatus);
 
-    function handleChange(
-        field: keyof TaskFilters,
-        value: string
+    const [priorityFilter, setPriorityFilter] =
+        useState(selectedPriority);
+
+    function handleFilters(
+        event: React.ChangeEvent<HTMLSelectElement>
     ) {
-        onChange({
-            ...filters,
-            [field]: value,
-        });
+        const value = event.target.value;
+
+        if (
+            event.target.id ===
+            "status-filter"
+        ) {
+            setStatusFilter(
+                value as
+                | "all"
+                | TaskStatus
+            );
+
+            onFilter(
+                value,
+                priorityFilter
+            );
+        }
+
+        if (
+            event.target.id ===
+            "priority-filter"
+        ) {
+            setPriorityFilter(
+                value as
+                | "all"
+                | TaskPriority
+            );
+
+            onFilter(
+                statusFilter,
+                value
+            );
+        }
     }
 
-    function clearFilters() {
-        onChange({
-            status: "all",
-            priority: "all",
-            search: "",
-        });
+    function handleClearFilters() {
+        setStatusFilter("all");
+        setPriorityFilter("all");
+
+        onClearFilters?.();
     }
 
     return (
-        <div className="py-2">
-            <div className="flex justify-between items-center ">
-                <div>
-                    {activeFilters > 0 && (
-                        <span className="text-sm text-blue-600">
-                            {activeFilters} active filter
-                            {activeFilters > 1 ? "s" : ""}
-                        </span>
-                    )}
-                </div>
+        <div className="flex gap-4 py-4 justify-end">
+            <div>
+                <label
+                    htmlFor="status-filter"
+                    className="mr-2 font-medium"
+                >
+                    Status:
+                </label>
 
-                {activeFilters > 0 && (
+                <select
+                    id="status-filter"
+                    value={statusFilter}
+                    onChange={handleFilters}
+                    className="bg-white px-2 py-2.5 block w-full rounded-md border-gray-300
+              shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                    <option value="all">
+                        All
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="inProgress">
+                        In Progress
+                    </option>
+
+                    <option value="completed">
+                        Completed
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label
+                    htmlFor="priority-filter"
+                    className="mr-2 font-medium"
+                >
+                    Priority:
+                </label>
+
+                <select
+                    id="priority-filter"
+                    value={priorityFilter}
+                    onChange={handleFilters}
+                    className="bg-white px-2 py-2.5 block w-full rounded-md border-gray-300
+              shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                    <option value="all">
+                        All
+                    </option>
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                    <option value="medium">
+                        Medium
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+                </select>
+            </div>
+
+            {activeFilterCount > 0 && (
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">
+                        {activeFilterCount} active
+                    </span>
+
                     <button
                         type="button"
-                        onClick={clearFilters}
-                        className="text-sm text-red-500 hover:text-red-700"
+                        onClick={
+                            handleClearFilters
+                        }
+                        className="text-sm text-blue-600 hover:text-blue-800"
                     >
-                        Clear Filters
+                        Clear
                     </button>
-                )}
-            </div>
-
-            <div className="flex gap-4 justify-end flex-wrap">
-
-                <div className="flex-1 min-w-50">
-                    <label
-                        htmlFor="search"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Search
-                    </label>
-
-                    <input
-                        id="search"
-                        type="text"
-                        placeholder="Search tasks..."
-                        value={filters.search}
-                        onChange={(event) =>
-                            handleChange(
-                                "search",
-                                event.target.value
-                            )
-                        }
-                        className="bg-white px-2 py-2 block w-full rounded-md border border-gray-300
-              shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    />
                 </div>
-
-                <div>
-                    <label
-                        htmlFor="status-filter"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Status
-                    </label>
-
-                    <select
-                        id="status-filter"
-                        value={filters.status}
-                        onChange={(event) =>
-                            handleChange(
-                                "status",
-                                event.target.value
-                            )
-                        }
-                        className="bg-white px-2 py-2.5 block w-full rounded-md border-gray-300
-              shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    >
-                        <option value="all">
-                            All Statuses
-                        </option>
-
-                        <option value="pending">
-                            Pending
-                        </option>
-
-                        <option value="inProgress">
-                            In Progress
-                        </option>
-
-                        <option value="completed">
-                            Completed
-                        </option>
-                    </select>
-                </div>
-
-                <div>
-                    <label
-                        htmlFor="priority-filter"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                        Priority
-                    </label>
-
-                    <select
-                        id="priority-filter"
-                        value={filters.priority}
-                        onChange={(event) =>
-                            handleChange(
-                                "priority",
-                                event.target.value
-                            )
-                        }
-                        className="bg-white px-2 py-2.5 block w-full rounded-md border-gray-300
-              shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    >
-                        <option value="all">
-                            All Priorities
-                        </option>
-
-                        <option value="high">
-                            High
-                        </option>
-
-                        <option value="medium">
-                            Medium
-                        </option>
-
-                        <option value="low">
-                            Low
-                        </option>
-                    </select>
-                </div>
-
-            </div>
+            )}
         </div>
     );
 }

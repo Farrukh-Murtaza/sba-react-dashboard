@@ -44,3 +44,16 @@ export interface TaskFormProps {
     onSubmit: (task: Task) => void;
     onCancel: () => void;
 }
+
+export interface TaskListProps {
+    tasks: Task[];
+    onUpdateList: (
+        id: string,
+        status: TaskStatus
+    ) => void;
+    onDeleteTask: (id: string) => void;
+    onEditTask: (task: Task) => void;
+}
+export const initialTasks: Task[] = [
+
+];
